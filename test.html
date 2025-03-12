@@ -119,15 +119,77 @@
       }
     }
   </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f1f1f1; /* light grey */
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      color: #1e3a8a; /* navy blue */
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      color: #1e3a8a; /* navy blue */
+      margin-bottom: 10px;
+    }
+
+    div {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 80%;
+      max-width: 300px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #1e3a8a; /* navy blue */
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+
+    button:hover {
+      background-color: #374e8c; /* darker navy blue */
+    }
+  </style>
 </head>
 <body>
-  <h1>Download Files from Box</h1>
-  
-    
+
   <div>
+    <h1>Download Files from Box</h1>
     <h2>Download File</h2>
     <input type="text" id="fileIdInput" placeholder="Enter Box file ID" />
     <button onclick="downloadFileFromBox()">Download from Box</button>
   </div>
+
+  <script>
+    function downloadFileFromBox() {
+      const fileId = document.getElementById('fileIdInput').value;
+      // Add your download functionality here
+      alert('Downloading file with ID: ' + fileId);
+    }
+  </script>
+  
 </body>
 </html>
