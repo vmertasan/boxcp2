@@ -5,8 +5,8 @@ const { PDFDocument, rgb, degrees, StandardFonts } = require('pdf-lib');
 // Set up Box SDK configuration
 const sdkConfig = JSON.parse(process.env.BOX_CONFIG);
 const sdk = BoxSDK.getPreconfiguredInstance(sdkConfig);
-const client = sdk.getAppAuthClient('enterprise', '832571940');
-const adminClient = sdk.getAppAuthClient('user', '16699258740');
+const client = sdk.getAppAuthClient('enterprise', '1245868755');
+const adminClient = sdk.getAppAuthClient('user', '39705731625');
 
 async function removeWatermark(fileId) {
   try {
