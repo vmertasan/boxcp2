@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <h1>DIANA</h1>
+  <title>Box File Upload and Download</title>
+  <script>
+    // Function to upload a file to Box through AWS Lambda
+    function uploadFileToBox() {
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+      if (!file) {
+        alert("Please select a file to upload.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // Send file to AWS Lambda function (use your API Gateway URL here)
+      fetch('https://vpvnio1i4e.execute-api.us-east-1.amazonaws.com/default/upload', {
+        method: 'POST',
+        body: formData,
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('File uploaded to Box:', data);
+        alert("File uploaded successfully.");
+      })
+      .catch(error => {
+        console.error('Error uploading file:', error);
+        alert("Error uploading file.");
+      });
+    }
+
+    // Function to convert base64 to Blob
+    function base64ToBlob(base64, contentType = '', sliceSize = 512) {
+      const byteCharacters = atob(base64);
+      const byteArrays = [];
+
+      for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        const slice = byteCharacters.slice(offset, offset + sliceSize);
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+      }
+      return new Blob(byteArrays, { type: contentType });
+    }
+
+     // Function to convert base64 to Blob
+     function base64ToBlob(base64, contentType = '', sliceSize = 512) {
+      const byteCharacters = atob(base64);
+      const byteArrays = [];
+
+      for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        const slice = byteCharacters.slice(offset, offset + sliceSize);
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+      }
+      return new Blob(byteArrays, { type: contentType });
+    }
+
+    // Function to download file from Box through AWS Lambda
+    async function downloadFileFromBox() {
+      const fileId = document.getElementById('fileIdInput').value;
+      if (!fileId) {
+        alert("Please enter a valid file ID.");
+        return;
+      }
+
+      try {
+        const response = await fetch(`https://nd79wcm8t7.execute-api.us-east-2.amazonaws.com/default/DIANA_Example/download/${fileId}`);
+
+        // Check for non-OK response
+        if (!response.ok) {
+          const errorText = await response.text();
+          try {
+            const errorData = JSON.parse(errorText);
+            alert(`Error downloading file:\n${errorData.message}`);
+          } catch (parseError) {
+            alert(`Unexpected error:\n${errorText}`);
+          }
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // Extract filename from header
+        const contentDisposition = response.headers.get('Content-Disposition');
+        let fileName = 'downloaded-file.pdf'; // Default filename
+        if (contentDisposition && contentDisposition.includes('filename=')) {
+          fileName = contentDisposition.split('filename=')[1].replace(/"/g, '');
+        }
+
+        // Handle base64 data
+        const responseBody = await response.text(); // Get base64 string
+        const pdfBlob = base64ToBlob(responseBody, 'application/pdf');
+        const url = window.URL.createObjectURL(pdfBlob);
+
+        // Trigger file download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url); // Clean up
+        document.body.removeChild(a);
+
+        alert(`File "${fileName}" downloaded successfully.`);
+      } catch (error) {
+        console.error('Error downloading file:', error);
+        // alert("An unexpected error occurred while downloading the file.");
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>Upload and Download Files from Box</h1>
+  
+  <div>
+    <h2>Upload File</h2>
+    <input type="file" id="fileInput" />
+    <button onclick="uploadFileToBox()">Upload to Box</button>
+  </div>
+  
+  <div>
+    <h2>Download File</h2>
+    <input type="text" id="fileIdInput" placeholder="Enter Box file ID" />
+    <button onclick="downloadFileFromBox()">Download from Box</button>
+  </div>
+</body>
+</html>
